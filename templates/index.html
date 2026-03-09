@@ -166,29 +166,36 @@ function sendRequest(base64Data){
 			var url = $("#url").val();
 			$("#loading").show();
 			$.ajax({
-				url : url,
-				type: "post",
-				cache: false,
-				async: true,
-				crossDomain: true,
-				headers: {
-					'Content-Type': 'application/json',
-					'Access-Control-Allow-Origin':'*'
-				},
-				data:JSON.stringify({image:base64Data}),
-				success: function(res){
-					$(".res-part").html("");
-					$(".res-part2").html("");
-					try{
-						var imageData = res[1].image;
-						if(imageData.length > 100){
-							if(imageData.length > 10){$(".res-part2").append("<img class='resp-img' src='data:image/jpeg;base64," + imageData + "' alt='' />");}
-						}
-					}catch(e){}
-					$(".res-part").html("<pre>" + JSON.stringify(res[0], undefined, 2) + "</pre>");
-					$("#loading").hide();
-				}
-			});
+    url: url,
+    type: "post",
+    cache: false,
+    async: true,
+    crossDomain: true,
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    data: JSON.stringify({ image: base64Data }),
+    success: function(res){
+        $(".res-part").html("");
+        $(".res-part2").html("");
+        try{
+            var imageData = res[1].image;
+            if(imageData.length > 100){
+                if(imageData.length > 10){
+                    $(".res-part2").append("<img class='resp-img' src='data:image/jpeg;base64," + imageData + "' alt='' />");
+                }
+            }
+        } catch(e) {}
+
+        $(".res-part").html("<pre>" + JSON.stringify(res[0], undefined, 2) + "</pre>");
+        $("#loading").hide();
+    },
+    error: function(xhr, status, error){
+        $(".res-part").html("<pre>Error: " + xhr.responseText + "</pre>");
+        $("#loading").hide();
+        console.error("AJAX error:", status, error, xhr.responseText);
+    }
+});
 		}
 	}
 }
