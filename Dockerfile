@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────
-# Stage 1: builder — instala dependencias
+# Stage 1: builder
 # ─────────────────────────────────────────
 FROM python:3.8-slim AS builder
 
@@ -12,14 +12,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /install
 
-# Copiamos primero requirements para aprovechar cache si no cambian deps
+# Copiamos lo necesario para que funcione -e .
 COPY requirements.txt .
-
-# Copiamos también los archivos del proyecto porque requirements tiene -e .
 COPY setup.py .
 COPY pyproject.toml* ./
 COPY README.md* ./
-COPY cnnClassifier ./cnnClassifier
+COPY src ./src
 COPY app.py .
 COPY config ./config
 COPY templates ./templates
@@ -29,7 +27,7 @@ RUN pip install --prefix=/dependencies --no-cache-dir -r requirements.txt
 
 
 # ─────────────────────────────────────────
-# Stage 2: runtime — imagen final limpia
+# Stage 2: runtime
 # ─────────────────────────────────────────
 FROM python:3.8-slim AS runtime
 
@@ -44,10 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Traer dependencias instaladas desde builder
 COPY --from=builder /dependencies /usr/local
-
-# Copiar el proyecto completo para ejecución
 COPY . /app
 
 EXPOSE 8080
