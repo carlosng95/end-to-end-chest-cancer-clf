@@ -71,5 +71,7 @@ class Training:
             path = self.config.trained_model_path,
             model = self.model
         )
+        print('////////////////////////////'*5)
+        print(self.train_generator.class_indices)
         
     
